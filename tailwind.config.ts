@@ -1,0 +1,1 @@
+import type {Config} from 'tailwindcss'; const c:Config={darkMode:'class',content:['./app/**/*.{ts,tsx}','./components/**/*.{ts,tsx}'],theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{brand:{500:'#1E6FE8',600:'#1859c4',400:'#4a90f5'}}}},plugins:[]}; export default c;

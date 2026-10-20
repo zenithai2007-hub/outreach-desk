@@ -1,0 +1,13 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+:root{--bg:#e8edf5;--panel:#eef2f8;--panel2:#e6ecf4;--ink:#1e293b;--mut:#64748b;--sh-d:rgba(163,177,198,.55);--sh-l:rgba(255,255,255,.9)}
+.dark{--bg:#161c28;--panel:#1c2434;--panel2:#182030;--ink:#e2e8f0;--mut:#94a3b8;--sh-d:rgba(0,0,0,.5);--sh-l:rgba(255,255,255,.06)}
+body{background:var(--bg);color:var(--ink)}
+.neu{background:var(--panel);box-shadow:8px 8px 18px var(--sh-d),-8px -8px 18px var(--sh-l)}
+.neu-sm{background:var(--panel);box-shadow:5px 5px 12px var(--sh-d),-5px -5px 12px var(--sh-l)}
+.neu-in{background:var(--panel2);box-shadow:inset 5px 5px 10px var(--sh-d),inset -5px -5px 10px var(--sh-l)}
+.neu-raised{background:linear-gradient(145deg,var(--panel),var(--panel2));box-shadow:10px 10px 22px var(--sh-d),-6px -6px 16px var(--sh-l);border:1px solid rgba(255,255,255,.35)}
+.glass-badge{backdrop-filter:blur(6px);box-shadow:2px 2px 6px var(--sh-d),inset 0 1px 1px rgba(255,255,255,.6)}
+.bubble-me{background:linear-gradient(135deg,#3b82f6,#1E6FE8 60%,#1859c4)}
+input,textarea,select{outline:none} input:focus,textarea:focus{box-shadow:inset 3px 3px 7px var(--sh-d),inset -3px -3px 7px var(--sh-l),0 0 0 2px #1E6FE8}
+*{-webkit-tap-highlight-color:transparent}
+.scrollthin::-webkit-scrollbar{width:5px}.scrollthin::-webkit-scrollbar-thumb{background:#b6c2d6;border-radius:99px}
