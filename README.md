@@ -1,68 +1,51 @@
-# Outreach Desk
+# Outreach Wise
 
-Personalized outreach across social platforms — AI writes, you edit & approve.
-**Rules baked in:** official APIs only · no scraping · no unsolicited bulk DMs · opt-outs always honored · per-user data isolation · secrets only in server env vars (never in browser, no key-paste screens).
+Manual-only outreach app — naam aur theme user ke Baymax logo jaisi (red `#BC3B3F` + white).
+AI draft yahan banta hai, aap **copy** kar ke WhatsApp / LinkedIn / Instagram waghera mein **khud bhejte** hain, phir wapis aa kar **Mark as sent** karte hain. Client ka reply **Paste reply** se haath se add hota hai.
 
-## Build order (strict)
-1. **Part 1 — Web dashboard** ✅ (this delivery)
-2. **Part 2 — Auto-send backend** ⏸ waiting for owner confirmation
-3. **Part 3 — Android keyboard (Kotlin)** ⏸ waiting for Part 2
+**Sakht usool:** koi auto-send nahi · koi bahir ka login / OAuth nahi · koi key entry nahi · koi settings screen nahi · per-user data isolation · opted-out client ko message mark nahi hota.
 
 ## Folder structure
 ```
 outreach-desk/
   app/
-    page.tsx            Landing + auth gate (Log In first) + dashboard shell
-    layout.tsx          Inter font, metadata
-    globals.css         Neumorphic design system (light/dark CSS vars)
-    api/ai-draft/route.ts  Server-only LLM draft (env key, local-generator fallback)
+    page.tsx               Landing + login (Log In pehle) + dashboard
+    layout.tsx             Inter, title, logo favicon
+    globals.css            Red/white neumorphic theme (light/dark)
+    api/ai-draft/route.ts  Built-in draft engine (server-side templates, koi key nahi)
     api/health/route.ts
-    inbox/ login/       Redirect stubs (single-entry app)
-  components/Inbox.tsx  Two-pane inbox, composer, drawer, modals (client/offer/reply)
-  lib/types.ts          Platform/Status types, platform registry
-  lib/seed.ts           Demo clients + default "My Offer"
-  prisma/schema.prisma  Supabase Postgres schema (User, Offer, Client, Message)
-  .env.example
+  components/Inbox.tsx     Two-pane inbox, composer (Copy / Mark as sent), drawer, modals
+  lib/types.ts             Platforms + status
+  lib/seed.ts              Demo clients + default "My Offer"
+  public/logo.jpg          User ka logo (landing, header, favicon source)
 ```
 
-## Part 1 — what's in
-- Two-pane unified inbox matching the brief: pill tabs All/Unread/Mentions (red badge), avatar rows, platform icons, red unread badges (3/5/9/99+), blue `@ 2` mention badge, grey muted dot, raised selected row
-- Chat: blue gradient bubbles right (`#1E6FE8`, "User" + time), grey bubbles left (name + time), green online dot header
-- Composer: text box, **Send**, **AI draft** (English / Roman Urdu, platform-suited tone & length), editable before send
-- Client details drawer: contact, niche, notes, status chips (New, Drafted, Sent, Replied, OptedOut), history, mute, opt-out
-- Login/Signup (login first), Add/Edit/Delete clients, CSV import (`name,platform,contact,niche`), filter by status + platform, search
-- **My Offer** profile used in every AI draft
-- Replies: official-API platforms are wired in Part 2; LinkedIn/Reddit/Facebook replies are pasted manually via **Paste reply** → status auto-changes to Replied (follow-ups stop)
-- Soft neumorphic style, light + dark mode, mobile single-pane with back arrow, safe-area padding
-- Part 1 persistence: per-user (by email) browser storage behind a repository seam — swap to Supabase via `prisma/schema.prisma` + `DATABASE_URL` in Part 2. AI key: server env `LLM_API_KEY` only; with no key, a local generator returns drafts with the same contract (labeled honestly in the UI).
+## Kaise kaam karta hai
+1. Client select karein (ya Add / CSV import — header row: `name,platform,contact,niche`)
+2. **AI draft** dabayein — draft "My Offer" + client notes se banta hai, platform ki tone mein, English ya Roman Urdu mein
+3. Draft edit karein → **Copy message** → platform app/website par ja kar khud paste + send karein
+4. Wapis aa kar **Mark as sent** — message chat mein record ho jata hai, status **Sent**
+5. Client reply de to **Paste reply** — reply chat mein aa jata hai, status **Replied**
+- Header mein sirf platform ka naam aur status dikhta hai. Drawer: contact, notes, status chips (New, Drafted, Sent, Replied, OptedOut), history, mute.
+- Data har account ke liye alag, isi device/browser mein save rehta hai.
 
-## Run
+## Run / Deploy
 ```bash
-cp .env.example .env   # optional: set LLM_API_KEY for live LLM drafts
 npm install
-npm run dev            # http://localhost:3000
+npm run dev     # http://localhost:3000
+npm run build   # deploy se pehle pass hona chahiye (Vercel: Next.js, koi env var nahi chahiye)
 ```
 
-## Deploy (Vercel)
-```bash
-npm run build          # must pass
-# Vercel: import this repo/folder, framework = Next.js, set env vars in project settings (server-side only)
-```
+## Test checklist
+- [ ] Sign up → log out → Log In (login tab pehle) → dusre account ke clients nazar nahi aate
+- [ ] Tabs All/Unread/Mentions, badges, filters (platform + status), search
+- [ ] Add/Edit/Delete client, CSV import
+- [ ] My Offer save → AI draft (English + Roman Urdu) offer aur niche use karta hai; Email draft mein unsubscribe line
+- [ ] **Copy message** clipboard mein copy karta hai; khali composer par warning aati hai
+- [ ] **Mark as sent** message ko blue bubble bana kar record karta hai, status Sent; opted-out par block
+- [ ] **Paste reply** grey bubble + status Replied
+- [ ] Pori UI mein kahin "auto-send", bahir ke login ya key ka koi zikr nahi
+- [ ] Dark mode; mobile par single pane + back arrow
 
-## Part 1 test checklist
-- [ ] Sign up → log out → Log In (login tab is first) → your clients are isolated from another account's
-- [ ] Tabs: All / Unread / Mentions counts match badges; selecting a row clears its unread badge
-- [ ] Filters (platform + status) and search narrow the list
-- [ ] Add client → appears selected with raised style; Edit and Delete work from the drawer
-- [ ] CSV import with header `name,platform,contact,niche` adds rows
-- [ ] My Offer save → AI draft (English) mentions your service/benefit/CTA and the client's niche
-- [ ] AI draft (Roman Urdu) returns a Roman Urdu message; Reddit draft is non-salesy, Email draft has an unsubscribe line
-- [ ] Edit a draft → Send → blue bubble appears, status becomes Sent; opted-out client cannot be sent to
-- [ ] Paste reply → grey bubble appears, status becomes Replied
-- [ ] Dark mode toggle; mobile width: list first, tap → chat, back arrow returns; drawer opens on desktop
-
-## Part 2 (not started — awaiting confirmation)
-WhatsApp Business Cloud API (approved templates, opted-in only), Gmail API/SMTP with unsubscribe, Discord bot (invited servers only); queue + rate limits + daily caps; webhooks for delivery/replies; auto-stop on reply/opt-out. LinkedIn/Reddit/Facebook/Instagram cold DMs stay manual.
-
-## Part 3 (not started)
-Kotlin `InputMethodService` keyboard, WhatsApp-green theme, AI key in suggestion bar → backend draft → `commitText`. Never auto-sends, no accessibility clicks, skips password fields (`inputType` check), text leaves device only on AI-key tap.
+## Part 3 — Android keyboard (baad mein, user ki confirmation par)
+Kotlin `InputMethodService`, WhatsApp-green theme, suggestion bar mein AI key → wahi built-in draft engine → `commitText`. Keyboard kabhi khud send nahi karta, koi accessibility auto-click nahi, password fields par kaam nahi karta (`inputType` check), text sirf AI key dabane par device se jata hai. App mein koi key entry nahi.

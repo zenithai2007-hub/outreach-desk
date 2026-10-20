@@ -2,7 +2,7 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {Client,Offer,PLATFORMS,PLATFORM_META,Status,colorFor,initials,nowTime} from '@/lib/types';
 import {seedClients,DEFAULT_OFFER} from '@/lib/seed';
-import {Sparkles,Send,ArrowLeft,Moon,Sun,Plus,Upload,UserRound,Info,X,Trash2,Pencil,LogOut,ClipboardPaste,ShieldCheck} from 'lucide-react';
+import {Sparkles,Copy,CheckCheck,ArrowLeft,Moon,Sun,Plus,Upload,UserRound,Info,X,Trash2,Pencil,LogOut,ClipboardPaste,ShieldCheck} from 'lucide-react';
 
 type Tab='All'|'Unread'|'Mentions';
 const uid=()=>Math.random().toString(36).slice(2,10);
@@ -34,14 +34,20 @@ export default function Inbox({user,onLogout}:{user:{name:string;email:string};o
 
  async function aiDraft(){
    if(!current) return; setBusy(true);
-   try{ const r=await fetch('/api/ai-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({client:current,offer,language:lang})}); const j=await r.json(); if(j.ok){setText(j.data.draft); patch(current.id,{status:current.status==='New'?'Drafted':current.status}); setNote(j.data.source==='llm'?'AI draft (LLM) — edit kar ke bhejein':'AI draft (local generator — server par LLM key set ho to live LLM) — edit kar ke bhejein');}}
+   try{ const r=await fetch('/api/ai-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({client:current,offer,language:lang})}); const j=await r.json(); if(j.ok){setText(j.data.draft); patch(current.id,{status:current.status==='New'?'Drafted':current.status}); setNote('AI draft tayyar hai — edit karein, phir Copy kar ke platform par khud bhejein.');}}
    catch{ setNote('AI draft fail — dobara try karein'); } finally{setBusy(false);}
  }
- function send(){
-   if(!current||!text.trim()) return; if(current.optedOut){setNote('Client opted out hai — message nahi bheja ja sakta.');return;}
-   addMsg(current.id,true,text.trim()); setText(''); patch(current.id,{status:'Sent',unread:0}); setNote('Message chat mein add ho gaya. Part 2 mein official API se auto-send hoga — abhi Part 1 manual/record mode hai.');
+ async function copyMsg(){
+   if(!current||!text.trim()){setNote('Composer khali hai — pehle message likhein ya AI draft lein.');return;}
+   try{ await navigator.clipboard.writeText(text); setNote(`Message copy ho gaya — ab ${current.platform} mein ja kar khud paste kar ke bhejein.`); }
+   catch{ setNote('Copy nahi hua — text select kar ke manual copy karein.'); }
  }
- function pasteReply(body:string){ if(!current||!body.trim())return; addMsg(current.id,false,body.trim()); patch(current.id,{status:'Replied',unread:0,mentions:0}); setModal(null); setNote('Reply add ho gaya — status Replied, follow-ups auto-stop (Part 2 rule).'); }
+ function markSent(){
+   if(!current||!text.trim()){setNote('Composer khali hai — jo message bheja hai woh yahan likhein, phir Mark as sent karein.');return;}
+   if(current.optedOut){setNote('Client opted out hai — isay message nahi bhejna chahiye.');return;}
+   addMsg(current.id,true,text.trim()); setText(''); patch(current.id,{status:'Sent',unread:0}); setNote('Marked as sent — record save ho gaya. Bhejna hamesha aap khud platform par karte hain.');
+ }
+ function pasteReply(body:string){ if(!current||!body.trim())return; addMsg(current.id,false,body.trim()); patch(current.id,{status:'Replied',unread:0,mentions:0}); setModal(null); setNote('Reply add ho gaya — status Replied ho gaya hai.'); }
 
  function importCSV(f:File){ f.text().then(t=>{ const lines=t.trim().split(/\r?\n/).slice(1); const add:Client[]=lines.filter(Boolean).map(l=>{const [name,platform,contact,niche]=l.split(',').map(x=>x?.trim()||''); return {id:uid(),name:name||'Unnamed',platform:(PLATFORMS.includes(platform as any)?platform:'Email') as Client['platform'],contact:contact||'',niche:niche||'',status:'New' as Status,notes:'',muted:false,optedOut:false,online:false,unread:0,mentions:0,messages:[]};}); setClients(cs=>[...add,...cs]); if(add[0]) setSel(add[0].id); setNote(`${add.length} clients CSV se import ho gaye.`);}); }
 
@@ -89,7 +95,7 @@ export default function Inbox({user,onLogout}:{user:{name:string;email:string};o
      <header className="flex items-center gap-3 p-4 border-b border-white/40">
        <button className="md:hidden neu-sm rounded-full p-2" onClick={()=>setShowChatMobile(false)}><ArrowLeft size={18}/></button>
        <div className="relative"><div className="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold" style={{background:colorFor(current.name)}}>{initials(current.name)}</div>{current.online&&<span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"/>}</div>
-       <div className="flex-1 min-w-0"><p className="font-bold truncate">{current.name}</p><p className="text-xs" style={{color:'var(--mut)'}}>{current.platform} • {current.online?'Online':'Offline'} • Replies: {PLATFORM_META[current.platform].replyMode}</p></div>
+       <div className="flex-1 min-w-0"><p className="font-bold truncate">{current.name}</p><p className="text-xs" style={{color:'var(--mut)'}}>{current.platform} • Status: {current.status}</p></div>
        <button onClick={()=>setDrawer(!drawer)} className="neu-sm rounded-full p-2.5"><Info size={18}/></button>
      </header>
      <div className="flex flex-1 overflow-hidden">
@@ -103,15 +109,15 @@ export default function Inbox({user,onLogout}:{user:{name:string;email:string};o
         {note&&<p className="mx-4 mb-2 text-xs rounded-xl px-3 py-2 neu-in flex gap-1.5"><ShieldCheck size={14} className="shrink-0 mt-0.5"/>{note}</p>}
         <div className="p-3 sm:p-4 pt-1" style={{paddingBottom:'max(.75rem, env(safe-area-inset-bottom))'}}>
          <div className="neu-in rounded-[24px] p-2">
-          <textarea value={text} onChange={e=>setText(e.target.value)} rows={3} placeholder={`Message ${current.name}… (edit AI draft here before sending)`} className="w-full bg-transparent resize-none px-3 py-2 text-[15px]"/>
+          <textarea value={text} onChange={e=>setText(e.target.value)} rows={3} placeholder={`Message ${current.name} ke liye yahan likhein… (AI draft bhi yahi edit hoga)`} className="w-full bg-transparent resize-none px-3 py-2 text-[15px]"/>
           <div className="flex flex-wrap items-center gap-2 px-1 pb-1">
            <select value={lang} onChange={e=>setLang(e.target.value as any)} className="neu-sm rounded-full px-2 py-2 text-xs bg-transparent"><option>English</option><option>Roman Urdu</option></select>
            <button disabled={busy} onClick={aiDraft} className="neu-sm rounded-full px-4 py-2.5 text-sm font-bold flex items-center gap-1.5 disabled:opacity-50"><Sparkles size={16} className="text-[#BC3B3F]"/>{busy?'Drafting…':'AI draft'}</button>
            <button onClick={()=>setModal('reply')} className="neu-sm rounded-full px-3 py-2.5 text-xs font-semibold flex items-center gap-1"><ClipboardPaste size={14}/> Paste reply</button>
-           <button onClick={send} className="bubble-me text-white rounded-full px-5 py-2.5 text-sm font-bold flex items-center gap-1.5 ml-auto shadow-lg"><Send size={15}/> Send</button>
+           <button onClick={copyMsg} className="neu-sm rounded-full px-4 py-2.5 text-sm font-bold flex items-center gap-1.5 ml-auto"><Copy size={15} className="text-[#BC3B3F]"/> Copy message</button>
+           <button onClick={markSent} className="bubble-me text-white rounded-full px-5 py-2.5 text-sm font-bold flex items-center gap-1.5 shadow-lg"><CheckCheck size={15}/> Mark as sent</button>
           </div>
          </div>
-         <p className="text-[11px] mt-2 px-1" style={{color:'var(--mut)'}}>LinkedIn / Reddit / Facebook / Instagram cold DM: AI draft yahan, send aap manually platform par. WhatsApp / Email / Discord auto-send = Part 2 (official APIs only).</p>
         </div>
        </div>
        {drawer&&<aside className="w-[290px] shrink-0 border-l border-white/40 p-4 overflow-y-auto scrollthin hidden lg:block">

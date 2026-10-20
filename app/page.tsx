@@ -16,9 +16,9 @@ export default function Home(){
  }
  return <main className="min-h-[100dvh] grid place-items-center p-4">
   <div className="w-full max-w-5xl grid md:grid-cols-2 gap-6 items-center">
-   <div><img src="/logo.jpg" alt="Outreach Wise logo" className="w-24 h-24 rounded-[26px] object-cover object-[center_22%] shadow-xl ring-4 ring-white mb-5"/><h1 className="text-4xl sm:text-5xl font-extrabold leading-tight">Outreach <span className="text-[#BC3B3F]">Wise</span></h1><p className="mt-3 text-lg" style={{color:'var(--mut)'}}>Ek hi inbox mein saare clients. AI personalized draft likhe, aap edit kar ke bhejein — sirf official channels, opt-out hamesha respect.</p>
+   <div><img src="/logo.jpg" alt="Outreach Wise logo" className="w-24 h-24 rounded-[26px] object-cover object-[center_22%] shadow-xl ring-4 ring-white mb-5"/><h1 className="text-4xl sm:text-5xl font-extrabold leading-tight">Outreach <span className="text-[#BC3B3F]">Wise</span></h1><p className="mt-3 text-lg" style={{color:'var(--mut)'}}>Ek hi inbox mein saare clients. AI personalized draft likhe, aap edit kar ke copy karein aur platform par khud bhejein — opt-out hamesha respect.</p>
    <div className="flex gap-2 mt-5 flex-wrap">{['WhatsApp','LinkedIn','Instagram','Facebook','Reddit','Discord','Email','Website'].map(p=><span key={p} className="neu-sm rounded-full px-3 py-1.5 text-xs font-bold">{p}</span>)}</div>
-   <p className="text-xs mt-5" style={{color:'var(--mut)'}}>Part 1: Dashboard • Part 2: Auto-send backend (official APIs) • Part 3: Android keyboard — har part aap ki confirmation ke baad.</p></div>
+   <p className="text-xs mt-5" style={{color:'var(--mut)'}}>Bilkul manual app — draft yahan banta hai, bhejna hamesha aap ke haath mein. Android keyboard (Part 3) baad mein aayega, wahi built-in AI use karega.</p></div>
    <div className="neu rounded-[28px] p-6">
     <div className="neu-in rounded-full flex p-1 font-bold text-sm"><button onClick={()=>setMode('login')} className={`flex-1 rounded-full py-2.5 ${mode==='login'?'bubble-me text-white':''}`}>Log In</button><button onClick={()=>setMode('signup')} className={`flex-1 rounded-full py-2.5 ${mode==='signup'?'bubble-me text-white':''}`}>Sign Up</button></div>
     <div className="space-y-3 mt-5">
@@ -27,7 +27,7 @@ export default function Home(){
      <input type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Password" className="neu-in w-full rounded-2xl px-4 py-3 bg-transparent"/>
      {err&&<p className="text-sm text-red-500">{err}</p>}
      <button onClick={submit} className="bubble-me text-white w-full rounded-2xl py-3.5 font-extrabold shadow-lg">{mode==='login'?'Log In':'Create account'}</button>
-     <p className="text-[11px] text-center" style={{color:'var(--mut)'}}>Part 1 demo auth (per-user data browser mein isolated). Production auth = Supabase Auth (Part 2 seam ready).</p>
+     <p className="text-[11px] text-center" style={{color:'var(--mut)'}}>Har account ka data alag (per-user isolation) — is device par save rehta hai.</p>
     </div>
    </div>
   </div>
