@@ -16,7 +16,7 @@ export default function Home(){
  }
  return <main className="min-h-[100dvh] grid place-items-center p-4">
   <div className="w-full max-w-5xl grid md:grid-cols-2 gap-6 items-center">
-   <div><h1 className="text-4xl sm:text-5xl font-extrabold leading-tight">Outreach Desk</h1><p className="mt-3 text-lg" style={{color:'var(--mut)'}}>Ek hi inbox mein saare clients. AI personalized draft likhe, aap edit kar ke bhejein — sirf official channels, opt-out hamesha respect.</p>
+   <div><img src="/logo.jpg" alt="Outreach Wise logo" className="w-24 h-24 rounded-[26px] object-cover object-[center_22%] shadow-xl ring-4 ring-white mb-5"/><h1 className="text-4xl sm:text-5xl font-extrabold leading-tight">Outreach <span className="text-[#BC3B3F]">Wise</span></h1><p className="mt-3 text-lg" style={{color:'var(--mut)'}}>Ek hi inbox mein saare clients. AI personalized draft likhe, aap edit kar ke bhejein — sirf official channels, opt-out hamesha respect.</p>
    <div className="flex gap-2 mt-5 flex-wrap">{['WhatsApp','LinkedIn','Instagram','Facebook','Reddit','Discord','Email','Website'].map(p=><span key={p} className="neu-sm rounded-full px-3 py-1.5 text-xs font-bold">{p}</span>)}</div>
    <p className="text-xs mt-5" style={{color:'var(--mut)'}}>Part 1: Dashboard • Part 2: Auto-send backend (official APIs) • Part 3: Android keyboard — har part aap ki confirmation ke baad.</p></div>
    <div className="neu rounded-[28px] p-6">

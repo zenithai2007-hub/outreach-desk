@@ -53,7 +53,7 @@ export default function Inbox({user,onLogout}:{user:{name:string;email:string};o
    {/* LEFT */}
    <aside className={`neu rounded-[28px] w-full md:w-[35%] md:min-w-[320px] flex-col overflow-hidden ${showChatMobile?'hidden md:flex':'flex'}`}>
     <div className="p-4 pb-2">
-     <div className="flex items-center justify-between"><div><h1 className="font-extrabold text-xl">Outreach Desk</h1><p className="text-xs" style={{color:'var(--mut)'}}>Assalamualaikum, {user.name.split(' ')[0]} • {user.email}</p></div>
+     <div className="flex items-center justify-between"><div><div className="flex items-center gap-2.5"><img src="/logo.jpg" alt="Outreach Wise logo" className="w-10 h-10 rounded-full object-cover object-[center_22%] ring-2 ring-[#BC3B3F]/30"/><h1 className="font-extrabold text-xl">Outreach <span className="text-[#BC3B3F]">Wise</span></h1></div><p className="text-xs" style={{color:'var(--mut)'}}>Assalamualaikum, {user.name.split(' ')[0]} • {user.email}</p></div>
       <div className="flex gap-2"><button aria-label="theme" onClick={()=>setDark(!dark)} className="neu-sm rounded-full p-2.5">{dark?<Sun size={16}/>:<Moon size={16}/>}</button><button aria-label="logout" onClick={onLogout} className="neu-sm rounded-full p-2.5"><LogOut size={16}/></button></div></div>
      <div className="neu-in rounded-full flex p-1 mt-4 text-sm font-semibold">
        {(['All','Unread','Mentions'] as Tab[]).map(t=><button key={t} onClick={()=>setTab(t)} className={`flex-1 rounded-full py-2 relative ${tab===t?'bubble-me text-white shadow':''}`}>{t}{t==='Mentions'&&counts.mentions>0&&<span className="glass-badge absolute -top-1.5 right-2 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">{counts.mentions}</span>}{t==='Unread'&&counts.unread>0&&<span className="ml-1 text-xs opacity-80">({counts.unread})</span>}</button>)}
@@ -77,7 +77,7 @@ export default function Inbox({user,onLogout}:{user:{name:string;email:string};o
        <div className="relative shrink-0"><div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold" style={{background:colorFor(c.name)}}>{initials(c.name)}</div>{c.online&&<span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"/>}</div>
        <div className="flex-1 min-w-0"><div className="flex items-center gap-2"><span className="font-bold truncate">{c.name}</span><span className="glass-badge text-[10px] font-bold text-white rounded-md px-1.5 py-0.5" style={{background:meta.bg}}>{meta.icon}</span><span className="text-[10px] px-2 py-0.5 rounded-full neu-in">{c.status}</span></div>
        <p className="text-xs truncate" style={{color:'var(--mut)'}}>{last?last.body:c.niche||'No messages yet'}</p></div>
-       <div className="flex flex-col items-end gap-1 shrink-0">{c.muted&&<span className="w-2.5 h-2.5 rounded-full bg-slate-400" title="Muted"/>}{c.mentions>0&&<span className="glass-badge bg-blue-500 text-white text-[11px] font-bold rounded-full px-2 py-0.5">@ {c.mentions}</span>}{c.unread>0&&<span className="glass-badge bg-red-500 text-white text-[11px] font-bold rounded-full px-2 py-0.5">{badge(c.unread)}</span>}</div>
+       <div className="flex flex-col items-end gap-1 shrink-0">{c.muted&&<span className="w-2.5 h-2.5 rounded-full bg-slate-400" title="Muted"/>}{c.mentions>0&&<span className="glass-badge bg-neutral-900 text-white text-[11px] font-bold rounded-full px-2 py-0.5">@ {c.mentions}</span>}{c.unread>0&&<span className="glass-badge bg-red-500 text-white text-[11px] font-bold rounded-full px-2 py-0.5">{badge(c.unread)}</span>}</div>
       </button>})}
      {list.length===0&&<p className="text-sm text-center py-8" style={{color:'var(--mut)'}}>No clients match this filter.</p>}
     </div>
@@ -106,7 +106,7 @@ export default function Inbox({user,onLogout}:{user:{name:string;email:string};o
           <textarea value={text} onChange={e=>setText(e.target.value)} rows={3} placeholder={`Message ${current.name}… (edit AI draft here before sending)`} className="w-full bg-transparent resize-none px-3 py-2 text-[15px]"/>
           <div className="flex flex-wrap items-center gap-2 px-1 pb-1">
            <select value={lang} onChange={e=>setLang(e.target.value as any)} className="neu-sm rounded-full px-2 py-2 text-xs bg-transparent"><option>English</option><option>Roman Urdu</option></select>
-           <button disabled={busy} onClick={aiDraft} className="neu-sm rounded-full px-4 py-2.5 text-sm font-bold flex items-center gap-1.5 disabled:opacity-50"><Sparkles size={16} className="text-[#1E6FE8]"/>{busy?'Drafting…':'AI draft'}</button>
+           <button disabled={busy} onClick={aiDraft} className="neu-sm rounded-full px-4 py-2.5 text-sm font-bold flex items-center gap-1.5 disabled:opacity-50"><Sparkles size={16} className="text-[#BC3B3F]"/>{busy?'Drafting…':'AI draft'}</button>
            <button onClick={()=>setModal('reply')} className="neu-sm rounded-full px-3 py-2.5 text-xs font-semibold flex items-center gap-1"><ClipboardPaste size={14}/> Paste reply</button>
            <button onClick={send} className="bubble-me text-white rounded-full px-5 py-2.5 text-sm font-bold flex items-center gap-1.5 ml-auto shadow-lg"><Send size={15}/> Send</button>
           </div>

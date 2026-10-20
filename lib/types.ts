@@ -14,7 +14,7 @@ export const PLATFORM_META:Record<Platform,{icon:string;bg:string;replyMode:stri
   Email:{icon:'@',bg:'#64748b',replyMode:'Official API replies (Part 2)'},
   Website:{icon:'W',bg:'#0ea5e9',replyMode:'Form submissions'},
 };
-export const AVATAR_COLORS=['#1E6FE8','#7c3aed','#059669','#d97706','#db2777','#0891b2','#4f46e5','#ea580c'];
+export const AVATAR_COLORS=['#BC3B3F','#9E2B30','#D94F53','#20161a','#7f1d22','#8a6568','#c0392b','#5c2e31'];
 export const colorFor=(name:string)=>AVATAR_COLORS[name.split('').reduce((a,c)=>a+c.charCodeAt(0),0)%AVATAR_COLORS.length];
 export const initials=(n:string)=>n.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
 export const nowTime=()=>new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
